@@ -1,5 +1,4 @@
 import os
-import time
 from rofi import Rofi
 
 r = Rofi()
@@ -13,7 +12,11 @@ class Player:
     label = name.split(".")[0]
     status = os.popen(f"playerctl status -p {name}").read().strip()
     if status == "Playing":
-      label += " (Playing)"
+      self.playing = True
+    else:
+      self.playing = False
+    if self.playing:
+      label += " (Playing)"      
     self.label = label
 
 def get_players():
@@ -36,15 +39,18 @@ def get_players():
 
 def pick_player():
   index, key = r.select("Which player to play-pause", labels)
-  
   if (key == 0):
+    pause_all_except(index)
     play_pause(index)
-    time.sleep(0.1)
-    get_players()
-    pick_player()
 
 def play_pause(index):
   os.popen(f"playerctl -p {names[index]} play-pause")
+
+def pause_all_except(index):
+  for i, player in enumerate(players):
+    if i != index:
+      if player.playing:
+        play_pause(i)
 
 if (__name__ == "__main__"):
   get_players()
