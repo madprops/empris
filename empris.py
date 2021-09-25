@@ -1,6 +1,6 @@
 import os
 import sys
-from rofi import Rofi
+from pyrofi import Rofi
 
 r = Rofi()
 players = []
@@ -38,18 +38,38 @@ def get_players():
   names = [p.name for p in players]
   labels = [p.label for p in players]
 
-def pick_player():
+def get_first_playing():
+  for i, player in enumerate(players):
+    if player.playing:
+      return i
+  return -1
+
+def show_menu():
   options = []
   options += labels
   options.append("---------")
   options.append("Pause All")
-  index, key = r.select("Which player to play-pause", options)
+  options.append("Next Track")
+  options.append("Previous Track")
+
+  selected = 0
+  selindex = get_first_playing()
+  if selindex != -1:
+    selected = selindex
+
+  header = "Which player to play-pause"
+  index, key = r.select(header, options, select = selected, singleclick = True)
+
   if (key == 0):
     if index < len(labels):
       pause_all_except(index)
     else:
       if options[index] == "Pause All":
         pause_all()
+      elif options[index] == "Next Track":
+        go_next()
+      elif options[index] == "Previous Track":
+        go_prev()
 
 def play_pause(index):
   os.popen(f"playerctl -p {names[index]} play-pause")
@@ -80,13 +100,13 @@ def pause_all():
   for i, player in enumerate(players):
     pause(i)
 
-def next():
+def go_next():
   for player in players:
     if player.playing:
       os.popen(f"playerctl -p {player.name} next")
       return
 
-def prev():
+def go_prev():
   for player in players:
     if player.playing:
       os.popen(f"playerctl -p {player.name} previous")
@@ -96,11 +116,13 @@ if (__name__ == "__main__"):
   mode = ""
   if len(sys.argv) > 1:
     mode = sys.argv[1]
-    
+
   get_players()
-  if mode == "next":
-    next()
+  if mode == "pauseall":
+    pause_all()
+  elif mode == "next":
+    go_next()
   elif mode == "prev":
-    prev()
+    go_prev()
   else:
-    pick_player()
+    show_menu()
