@@ -41,17 +41,26 @@ def pick_player():
   index, key = r.select("Which player to play-pause", labels)
   if (key == 0):
     pause_all_except(index)
-    play_pause(index)
 
 def play_pause(index):
   os.popen(f"playerctl -p {names[index]} play-pause")
 
-def pause_all_except(index):
+def pause_all_except(current):
+  playing = []
   for i, player in enumerate(players):
-    if i != index:
+    if i != current:
       if player.playing:
-        play_pause(i)
-
+        playing.append(i)
+  
+  if len(playing) > 0:
+    for i in playing:
+      play_pause(i)  
+    
+    if players[current].playing:
+      return
+  
+  play_pause(current)
+  
 if (__name__ == "__main__"):
   get_players()
   pick_player()
