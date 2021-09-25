@@ -1,4 +1,4 @@
-![](https://i.imgur.com/GJd0pPB.gif)
+![](https://i.imgur.com/2n9aHTc.jpg)
 
 It uses playerctl to get a list of players.
 
