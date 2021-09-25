@@ -85,9 +85,9 @@ def pause(index):
   if player.playing:
     os.popen(f"playerctl -p {names[index]} pause")
 
-def pause_all_except(current):
+def pause_all_except(index):
   pause_all()
-  play(current)
+  play(index)
 
 def pause_all():
   for i, player in enumerate(players):
