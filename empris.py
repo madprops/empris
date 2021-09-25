@@ -38,11 +38,14 @@ def get_players():
   names = [p.name for p in players]
   labels = [p.label for p in players]
 
-def get_first_playing():
+def get_playing():
+  playing = []
+
   for i, player in enumerate(players):
     if player.playing:
-      return i
-  return -1
+      playing.append(i)
+      
+  return playing
 
 def show_menu():
   options = []
@@ -53,9 +56,9 @@ def show_menu():
   options.append("Prev Track")
 
   selected = 0
-  selindex = get_first_playing()
-  if selindex != -1:
-    selected = selindex
+  playing = get_playing()
+  if len(playing) > 0:
+    selected = playing[0]
 
   header = "Which player to play-pause"
   index, key = r.select(header, options, select = selected, singleclick = True)
@@ -75,20 +78,18 @@ def play_pause(index):
   os.popen(f"playerctl -p {names[index]} play-pause")
 
 def pause(index):
-  os.popen(f"playerctl -p {names[index]} pause")
+  player = players[index]
+  if player.playing:
+    os.popen(f"playerctl -p {names[index]} pause")
 
 def pause_all_except(current):
-  playing = []
+  playing = get_playing()
   pause_current = True
-
-  for i, player in enumerate(players):
-    if i != current:
-      if player.playing:
-        playing.append(i)
 
   if len(playing) > 0:
     for i in playing:
-      pause(i)
+      if i != current:
+        pause(i)
 
     if players[current].playing:
       pause_current = False
