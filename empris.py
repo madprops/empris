@@ -50,7 +50,7 @@ def show_menu():
   options.append("---------")
   options.append("Pause All")
   options.append("Next Track")
-  options.append("Previous Track")
+  options.append("Prev Track")
 
   selected = 0
   selindex = get_first_playing()
@@ -68,7 +68,7 @@ def show_menu():
         pause_all()
       elif options[index] == "Next Track":
         go_next()
-      elif options[index] == "Previous Track":
+      elif options[index] == "Prev Track":
         go_prev()
 
 def play_pause(index):
