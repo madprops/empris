@@ -77,25 +77,17 @@ def show_menu():
 def play_pause(index):
   os.popen(f"playerctl -p {names[index]} play-pause")
 
+def play(index):
+  os.popen(f"playerctl -p {names[index]} play")
+
 def pause(index):
   player = players[index]
   if player.playing:
     os.popen(f"playerctl -p {names[index]} pause")
 
 def pause_all_except(current):
-  playing = get_playing()
-  pause_current = True
-
-  if len(playing) > 1:
-    for i in playing:
-      if i != current:
-        pause(i)
-
-    if players[current].playing:
-      pause_current = False
-
-  if pause_current:
-    play_pause(current)
+  pause_all()
+  play(current)
 
 def pause_all():
   for i, player in enumerate(players):
