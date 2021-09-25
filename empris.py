@@ -47,6 +47,8 @@ def play_pause(index):
 
 def pause_all_except(current):
   playing = []
+  pause_current = True
+
   for i, player in enumerate(players):
     if i != current:
       if player.playing:
@@ -57,9 +59,10 @@ def pause_all_except(current):
       play_pause(i)  
     
     if players[current].playing:
-      return
+      pause_current = False
   
-  play_pause(current)
+  if pause_current:
+    play_pause(current)
   
 if (__name__ == "__main__"):
   get_players()
