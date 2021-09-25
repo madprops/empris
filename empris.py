@@ -1,4 +1,5 @@
 import os
+import sys
 from rofi import Rofi
 
 r = Rofi()
@@ -16,7 +17,7 @@ class Player:
     else:
       self.playing = False
     if self.playing:
-      label += " (Playing)"      
+      label += " (Playing)"
     self.label = label
 
 def get_players():
@@ -30,10 +31,10 @@ def get_players():
 
   result = os.popen("playerctl --list-all").read().strip()
   namelist = result.split("\n")
-  
+
   for name in namelist:
-    players.append(Player(name))  
-  
+    players.append(Player(name))
+
   names = [p.name for p in players]
   labels = [p.label for p in players]
 
@@ -54,7 +55,7 @@ def play_pause(index):
   os.popen(f"playerctl -p {names[index]} play-pause")
 
 def pause(index):
-  os.popen(f"playerctl -p {names[index]} pause")  
+  os.popen(f"playerctl -p {names[index]} pause")
 
 def pause_all_except(current):
   playing = []
@@ -64,21 +65,42 @@ def pause_all_except(current):
     if i != current:
       if player.playing:
         playing.append(i)
-  
+
   if len(playing) > 0:
     for i in playing:
-      pause(i)  
-    
+      pause(i)
+
     if players[current].playing:
       pause_current = False
-  
+
   if pause_current:
     play_pause(current)
 
 def pause_all():
   for i, player in enumerate(players):
     pause(i)
-  
+
+def next():
+  for player in players:
+    if player.playing:
+      os.popen(f"playerctl -p {player.name} next")
+      return
+
+def prev():
+  for player in players:
+    if player.playing:
+      os.popen(f"playerctl -p {player.name} previous")
+      return
+
 if (__name__ == "__main__"):
+  mode = ""
+  if len(sys.argv) > 1:
+    mode = sys.argv[1]
+    
   get_players()
-  pick_player()
+  if mode == "next":
+    next()
+  elif mode == "prev":
+    prev()
+  else:
+    pick_player()
