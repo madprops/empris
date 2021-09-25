@@ -86,7 +86,7 @@ def pause_all_except(current):
   playing = get_playing()
   pause_current = True
 
-  if len(playing) > 0:
+  if len(playing) > 1:
     for i in playing:
       if i != current:
         pause(i)
