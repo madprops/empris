@@ -55,7 +55,7 @@ def show_menu():
   if len(playing) > 0:
     selected = playing[0]
 
-  prompt = "Select player"
+  prompt = "Select Player"
   ans = os.popen(f"echo '{items}' | rofi -dmenu -p '{prompt}' -format i \
                 -selected-row {selected} -me-select-entry ''\
                 -me-accept-entry 'MousePrimary'").read().strip()
