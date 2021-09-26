@@ -1,6 +1,21 @@
 import os
 import sys
 
+class Rofi:
+  def __init__(self, args):
+    self.args = args
+
+  def select(self, prompt, options, selected):
+    items = "\n".join(options)
+    ans = os.popen(f"echo '{items}' | rofi -dmenu -p '{prompt}' -format i \
+      -selected-row {selected} -me-select-entry ''\
+      -me-accept-entry 'MousePrimary' {self.args}").read().strip()
+  
+    if ans == "":
+      return -1
+    
+    return int(ans)
+
 class PlayerList:
   def __init__(self):
     self.players = []
@@ -19,7 +34,7 @@ class PlayerList:
     return playing
   
   def name(self, index):
-    return self.players[index].name
+    return self.players[index].name 
 
 class Player:
   def __init__(self, name):
@@ -50,22 +65,17 @@ def show_menu():
   options.append("Pause All")
   options.append("Next Track")
   options.append("Prev Track")
-  items = "\n".join(options)
 
   selected = 0
   playing = playerlist.get_playing()
+  
   if len(playing) > 0:
     selected = playing[0]
+  
+  index = rofi.select("Select Player", options, selected)
 
-  prompt = "Select Player"
-  ans = os.popen(f"echo '{items}' | rofi -dmenu -p '{prompt}' -format i \
-                -selected-row {selected} -me-select-entry ''\
-                -me-accept-entry 'MousePrimary'").read().strip()
-  
-  if ans == "":
+  if (index == -1):
     return
-  
-  index = int(ans)
 
   if index < len(playerlist.players):
     pause_all_except(index)
@@ -125,6 +135,7 @@ def go_prev():
       return
 
 if (__name__ == "__main__"):
+  rofi = Rofi("-font 'hack 18' -theme-str 'window { width: 600px; }'")
   playerlist = PlayerList()
 
   mode = ""
