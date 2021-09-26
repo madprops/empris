@@ -1,13 +1,12 @@
 import os
 import sys
-from pyrofi import Rofi
 
 class PlayerList:
   def __init__(self):
     self.players = []
   
   def add_player(self, player):
-    self.players.append(player)
+    self.players.append(player)   
 
   def get_labels(self):
     return [p.label for p in self.players]
@@ -49,25 +48,32 @@ def show_menu():
   options.append("Pause All")
   options.append("Next Track")
   options.append("Prev Track")
+  items = "\n".join(options)
 
   selected = 0
   playing = playerlist.get_playing()
   if len(playing) > 0:
     selected = playing[0]
 
-  header = "Which player to play-pause"
-  index, key = rofi.select(header, options, select = selected, singleclick = True)
+  prompt = "Select player"
+  ans = os.popen(f"echo '{items}' | rofi -dmenu -p '{prompt}' -format i \
+                -selected-row {selected} -me-select-entry ''\
+                -me-accept-entry 'MousePrimary'").read().strip()
+  
+  if ans == "":
+    return
+  
+  index = int(ans)
 
-  if (key == 0):
-    if index < len(playerlist.players):
-      pause_all_except(index)
-    else:
-      if options[index] == "Pause All":
-        pause_all()
-      elif options[index] == "Next Track":
-        go_next()
-      elif options[index] == "Prev Track":
-        go_prev()
+  if index < len(playerlist.players):
+    pause_all_except(index)
+  else:
+    if options[index] == "Pause All":
+      pause_all()
+    elif options[index] == "Next Track":
+      go_next()
+    elif options[index] == "Prev Track":
+      go_prev()
 
 def toggleplay(index):
   player = playerlist.players[index]
@@ -79,12 +85,12 @@ def toggleplay(index):
 def play(index):
   player = playerlist.players[index]
   if not player.playing:
-    os.popen(f"playerctl -p {playerlist.name(index)} play")
+    os.popen(f"playerctl -p {playerlist.name(index)} play").read()
 
 def pause(index):
   player = playerlist.players[index]
   if player.playing:
-    os.popen(f"playerctl -p {playerlist.name(index)} pause")
+    os.popen(f"playerctl -p {playerlist.name(index)} pause").read()
 
 def pause_all_except(index):
   player = playerlist.players[index]
@@ -107,17 +113,16 @@ def pause_all():
 def go_next():
   for player in playerlist.players:
     if player.playing:
-      os.popen(f"playerctl -p {player.name} next")
+      os.popen(f"playerctl -p {player.name} next").read()
       return
 
 def go_prev():
   for player in playerlist.players:
     if player.playing:
-      os.popen(f"playerctl -p {player.name} previous")
+      os.popen(f"playerctl -p {player.name} previous").read()
       return
 
 if (__name__ == "__main__"):
-  rofi = Rofi()
   playerlist = PlayerList()
 
   mode = ""
