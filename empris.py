@@ -37,6 +37,8 @@ class Player:
 def get_players():
   splist = os.popen("playerctl --list-all") \
     .read().strip().split("\n")
+  
+  splist.sort()
 
   for name in splist:
     playerlist.add_player(Player(name))
