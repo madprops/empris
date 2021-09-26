@@ -72,11 +72,17 @@ def show_menu():
       elif options[index] == "Prev Track":
         go_prev()
 
-def play_pause(index):
-  os.popen(f"playerctl -p {playerlist.name(index)} play-pause")
+def toggleplay(index):
+  player = playerlist.players[index]
+  if player.playing:
+    pause(index)
+  else:
+    play(index)
 
 def play(index):
-  os.popen(f"playerctl -p {playerlist.name(index)} play")
+  player = playerlist.players[index]
+  if not player.playing:
+    os.popen(f"playerctl -p {playerlist.name(index)} play")
 
 def pause(index):
   player = playerlist.players[index]
@@ -88,7 +94,7 @@ def pause_all_except(index):
     if i != index:
       pause(i)
   
-  play(index)
+  toggleplay(index)
 
 def pause_all():
   for i, _ in enumerate(playerlist.players):
