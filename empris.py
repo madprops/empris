@@ -96,14 +96,13 @@ def pause(index):
 def pause_all_except(index):
   player = playerlist.players[index]
   playing = playerlist.get_playing()
-  was_playing = player.playing
 
   for i, _ in enumerate(playerlist.players):
     if i != index:
       pause(i)
 
   if len(playing) > 1:
-    if was_playing:
+    if not player.playing:
       play(index)
   else:
     toggleplay(index)
