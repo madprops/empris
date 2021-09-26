@@ -8,9 +8,6 @@ class PlayerList:
   
   def add_player(self, player):
     self.players.append(player)
-  
-  def get_names(self):
-    return [p.name for p in self.players]
 
   def get_labels(self):
     return [p.label for p in self.players]
