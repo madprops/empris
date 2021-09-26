@@ -83,19 +83,31 @@ def play(index):
   player = playerlist.players[index]
   if not player.playing:
     os.popen(f"playerctl -p {playerlist.name(index)} play")
+    return True
+  return False
 
 def pause(index):
   player = playerlist.players[index]
   if player.playing:
     os.popen(f"playerctl -p {playerlist.name(index)} pause")
+    return True
+  return False
 
 def pause_all_except(index):
+  player = playerlist.players[index]
+  playing = playerlist.get_playing()
+  was_playing = player.playing
+
   for i, _ in enumerate(playerlist.players):
     if i != index:
       pause(i)
-  
-  toggleplay(index)
 
+  if len(playing) > 1:
+    if was_playing:
+      play(index)
+  else:
+    toggleplay(index)
+      
 def pause_all():
   for i, _ in enumerate(playerlist.players):
     pause(i)
