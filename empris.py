@@ -1,5 +1,6 @@
 import os
 import sys
+import subprocess
 
 class Rofi:
   def __init__(self, args):
@@ -34,7 +35,13 @@ class PlayerList:
     return playing
   
   def name(self, index):
-    return self.players[index].name 
+    return self.players[index].name
+
+  def index(self, name):
+    for i, player in enumerate(self.players):
+      if player.name == name:
+        return i
+    return -1
 
 class Player:
   def __init__(self, name):
@@ -50,6 +57,9 @@ class Player:
     self.label = label
 
 def get_players():
+  global playerlist
+  playerlist = PlayerList()
+
   splist = os.popen("playerctl --list-all") \
     .read().strip().split("\n")
   
@@ -134,20 +144,38 @@ def go_prev():
       os.popen(f"playerctl -p {player.name} previous").read()
       return
 
+def start_autopause_daemon():
+  p = subprocess.Popen(["playerctl", "status", "--follow", "-f" ,"autopause - {{playerName}} - {{status}}"], stdout=subprocess.PIPE)
+
+  for line in iter(p.stdout.readline, ""):
+    item = line.decode('UTF-8').strip()
+    if item.startswith("autopause - "):
+      split = item.split(" - ")
+      name = split[1]
+      status = split[2]
+      if status == "Playing":
+        get_players()
+        index = playerlist.index(name)
+        pause_all_except(index)
+
 if (__name__ == "__main__"):
   rofi = Rofi("-font 'hack 16' -theme-str 'window { width: 600px; }'")
-  playerlist = PlayerList()
-
+  
   mode = ""
   if len(sys.argv) > 1:
     mode = sys.argv[1]
 
-  get_players()
   if mode == "pauseall":
+    get_players()
     pause_all()
   elif mode == "next":
+    get_players()
     go_next()
   elif mode == "prev":
+    get_players()
     go_prev()
+  elif mode == "autopause":
+    start_autopause_daemon()
   else:
+    get_players()
     show_menu()
