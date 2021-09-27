@@ -25,10 +25,10 @@ class PlayerList:
   def add_player(self, player):
     self.players.append(player)   
 
-  def get_labels(self):
+  def labels(self):
     return [p.label for p in self.players]
   
-  def get_playing(self):
+  def playing(self):
     playing = []
     for i, player in enumerate(self.players):
       if player.playing:
@@ -40,7 +40,7 @@ class PlayerList:
 
   def index(self, name):
     for i, player in enumerate(self.players):
-      if player.name == name:
+      if name == player.name:
         return i
     return -1
 
@@ -71,14 +71,14 @@ def get_players():
 
 def show_menu():
   options = []
-  options += playerlist.get_labels()
+  options += playerlist.labels()
   options.append("---------")
   options.append("Pause All")
   options.append("Next Track")
   options.append("Prev Track")
 
   selected = 0
-  playing = playerlist.get_playing()
+  playing = playerlist.playing()
   
   if len(playing) > 0:
     selected = playing[0]
@@ -138,7 +138,7 @@ def go_prev():
       return
 
 def start_autopause_daemon():
-  p = subprocess.Popen(["playerctl", "status", "--follow", "-f" ,"autopause - {{playerName}} - {{status}}"], stdout=subprocess.PIPE)
+  p = subprocess.Popen(["playerctl", "status", "--follow", "-f" ,"autopause - {{playerInstance}} - {{status}}"], stdout=subprocess.PIPE)
 
   for line in iter(p.stdout.readline, ""):
     item = line.decode('UTF-8').strip()
@@ -150,9 +150,10 @@ def start_autopause_daemon():
         time.sleep(0.25)
         get_players()
         index = playerlist.index(name)
-        player = playerlist.players[index]
-        if player.playing:
-          pause_all_except(index)
+        if index >= 0:
+          player = playerlist.players[index]
+          if player.playing:
+            pause_all_except(index)
 
 if (__name__ == "__main__"):
   rofi = Rofi("-font 'hack 16' -theme-str 'window { width: 600px; }'")
