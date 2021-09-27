@@ -153,7 +153,6 @@ def start_autopause_daemon():
         player = playerlist.players[index]
         if player.playing:
           pause_all_except(index)
-          play(index)
 
 if (__name__ == "__main__"):
   rofi = Rofi("-font 'hack 16' -theme-str 'window { width: 600px; }'")
