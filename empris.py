@@ -135,7 +135,7 @@ def go_prev():
       return
 
 if (__name__ == "__main__"):
-  rofi = Rofi("-font 'hack 18' -theme-str 'window { width: 600px; }'")
+  rofi = Rofi("-font 'hack 16' -theme-str 'window { width: 600px; }'")
   playerlist = PlayerList()
 
   mode = ""
