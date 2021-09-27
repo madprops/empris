@@ -90,6 +90,7 @@ def show_menu():
 
   if index < len(playerlist.players):
     pause_all_except(index)
+    toggleplay(index)
   else:
     if options[index] == "Pause All":
       pause_all()
@@ -116,18 +117,9 @@ def pause(index):
     os.popen(f"playerctl -p {playerlist.name(index)} pause").read()
 
 def pause_all_except(index):
-  player = playerlist.players[index]
-  playing = playerlist.get_playing()
-
   for i, _ in enumerate(playerlist.players):
     if i != index:
       pause(i)
-
-  if len(playing) > 1:
-    if not player.playing:
-      play(index)
-  else:
-    toggleplay(index)
       
 def pause_all():
   for i, _ in enumerate(playerlist.players):
@@ -155,12 +147,13 @@ def start_autopause_daemon():
       name = split[1]
       status = split[2]
       if status == "Playing":
-        time.sleep(1)
+        time.sleep(0.25)
         get_players()
         index = playerlist.index(name)
         player = playerlist.players[index]
         if player.playing:
           pause_all_except(index)
+          play(index)
 
 if (__name__ == "__main__"):
   rofi = Rofi("-font 'hack 16' -theme-str 'window { width: 600px; }'")
