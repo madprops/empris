@@ -1,5 +1,6 @@
 import os
 import sys
+import time
 import subprocess
 
 class Rofi:
@@ -88,7 +89,7 @@ def show_menu():
     return
 
   if index < len(playerlist.players):
-    pause_all_except(index, togglestring(index))
+    pause_all_except(index)
   else:
     if options[index] == "Pause All":
       pause_all()
@@ -97,12 +98,12 @@ def show_menu():
     elif options[index] == "Prev Track":
       go_prev()
 
-def togglestring(index):
+def toggleplay(index):
   player = playerlist.players[index]
   if player.playing:
-    return "pause"
+    pause(index)
   else:
-    return "play"
+    play(index)
 
 def play(index):
   player = playerlist.players[index]
@@ -114,7 +115,7 @@ def pause(index):
   if player.playing:
     os.popen(f"playerctl -p {playerlist.name(index)} pause").read()
 
-def pause_all_except(index, mode):
+def pause_all_except(index):
   player = playerlist.players[index]
   playing = playerlist.get_playing()
 
@@ -126,10 +127,7 @@ def pause_all_except(index, mode):
     if not player.playing:
       play(index)
   else:
-    if mode == "play":
-      play(index)
-    elif mode == "pause":
-      pause(index)
+    toggleplay(index)
       
 def pause_all():
   for i, _ in enumerate(playerlist.players):
@@ -157,9 +155,12 @@ def start_autopause_daemon():
       name = split[1]
       status = split[2]
       if status == "Playing":
+        time.sleep(1)
         get_players()
         index = playerlist.index(name)
-        pause_all_except(index, "play")
+        player = playerlist.players[index]
+        if player.playing:
+          pause_all_except(index)
 
 if (__name__ == "__main__"):
   rofi = Rofi("-font 'hack 16' -theme-str 'window { width: 600px; }'")
