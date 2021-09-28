@@ -149,6 +149,8 @@ def start_autopause():
       name = split[1]
       status = split[2]
       if status == "Playing":
+        # This sleep is to avoid conflict
+        # When changing players through empris manually
         time.sleep(0.25)
         get_players()
         index = playerlist.index(name)
