@@ -12,29 +12,29 @@ class Rofi:
     ans = os.popen(f"echo '{items}' | rofi -dmenu -p '{prompt}' -format i \
       -selected-row {selected} -me-select-entry ''\
       -me-accept-entry 'MousePrimary' {self.args}").read().strip()
-  
+
     if ans == "":
       return -1
-    
+
     return int(ans)
 
 class PlayerList:
   def __init__(self):
     self.players = []
-  
+
   def add_player(self, player):
-    self.players.append(player)   
+    self.players.append(player)
 
   def labels(self):
     return [p.label for p in self.players]
-  
+
   def playing(self):
     playing = []
     for i, player in enumerate(self.players):
       if player.playing:
         playing.append(i)
     return playing
-  
+
   def name(self, index):
     return self.players[index].name
 
@@ -63,14 +63,14 @@ def get_players():
 
   splist = os.popen("playerctl --list-all") \
     .read().strip().split("\n")
-  
+
   splist.sort()
 
   for name in splist:
     playerlist.add_player(Player(name))
 
 def show_menu():
-  rofi = Rofi("-font 'hack 16' -theme-str 'window { width: 600px; }'")
+  rofi = Rofi("-font 'sans-serif 16' -theme-str 'window { width: 600px; }'")
 
   options = []
   options += playerlist.labels()
@@ -81,10 +81,10 @@ def show_menu():
 
   selected = 0
   playing = playerlist.playing()
-  
+
   if len(playing) > 0:
     selected = playing[0]
-  
+
   index = rofi.select("Select Player", options, selected)
 
   if (index == -1):
@@ -122,7 +122,7 @@ def pause_all_except(index):
   for i, _ in enumerate(playerlist.players):
     if i != index:
       pause(i)
-      
+
 def pause_all():
   for i, _ in enumerate(playerlist.players):
     pause(i)
@@ -139,7 +139,7 @@ def go_prev():
       os.popen(f"playerctl -p {player.name} previous").read()
       return
 
-def start_autopause_daemon():
+def start_autopause():
   p = subprocess.Popen(["playerctl", "status", "--follow", "-f" ,"autopause - {{playerInstance}} - {{status}}"], stdout=subprocess.PIPE)
 
   for line in iter(p.stdout.readline, ""):
@@ -157,14 +157,14 @@ def start_autopause_daemon():
           if player.playing:
             pause_all_except(index)
 
-if (__name__ == "__main__"):  
+if (__name__ == "__main__"):
   mode = ""
-  
+
   if len(sys.argv) > 1:
     mode = sys.argv[1]
 
   if mode == "autopause":
-    start_autopause_daemon()
+    start_autopause()
   else:
     get_players()
     if mode == "pauseall":
