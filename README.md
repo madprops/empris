@@ -10,6 +10,6 @@ It auto-pauses all other playing players.
 
 The menu has options for Pause All, Next, and Prev.
 
-Arguments passed can be "pauseall", "next", or "prev".
+Arguments passed can be "pauseall", "next", "prev" or "autopause".
 
 No arguments show the menu.
