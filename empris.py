@@ -70,6 +70,8 @@ def get_players():
     playerlist.add_player(Player(name))
 
 def show_menu():
+  rofi = Rofi("-font 'hack 16' -theme-str 'window { width: 600px; }'")
+
   options = []
   options += playerlist.labels()
   options.append("---------")
@@ -155,24 +157,21 @@ def start_autopause_daemon():
           if player.playing:
             pause_all_except(index)
 
-if (__name__ == "__main__"):
-  rofi = Rofi("-font 'hack 16' -theme-str 'window { width: 600px; }'")
-  
+if (__name__ == "__main__"):  
   mode = ""
+  
   if len(sys.argv) > 1:
     mode = sys.argv[1]
 
-  if mode == "pauseall":
-    get_players()
-    pause_all()
-  elif mode == "next":
-    get_players()
-    go_next()
-  elif mode == "prev":
-    get_players()
-    go_prev()
-  elif mode == "autopause":
+  if mode == "autopause":
     start_autopause_daemon()
   else:
     get_players()
-    show_menu()
+    if mode == "pauseall":
+      pause_all()
+    elif mode == "next":
+      go_next()
+    elif mode == "prev":
+      go_prev()
+    else:
+      show_menu()
