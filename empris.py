@@ -56,6 +56,9 @@ class PlayerList:
 
         return -1
 
+    def empty(self) -> None:
+        self.players = []
+
 
 playerlist = PlayerList()
 
@@ -77,6 +80,7 @@ class Player:
 
 
 def get_players() -> None:
+    playerlist.empty()
     splist = os.popen("playerctl --list-all").read().strip().split("\n")
     splist.sort()
 
@@ -208,7 +212,10 @@ def main() -> None:
         mode = sys.argv[1]
 
     if mode == "autopause":
-        start_autopause()
+        try:
+            start_autopause()
+        except KeyboardInterrupt:
+            pass
     else:
         get_players()
 
