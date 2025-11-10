@@ -29,13 +29,14 @@ class Rofi:
 
 class PlayerList:
     def __init__(self) -> None:
+        self.icon = "☢️"
         self.players: list[Player] = []
 
     def add_player(self, player: Player) -> None:
         self.players.append(player)
 
     def labels(self) -> list[str]:
-        return [p.label for p in self.players]
+        return [f"{self.icon} {p.label}" for p in self.players]
 
     def playing(self) -> list[int]:
         playing = []
@@ -93,7 +94,6 @@ def show_menu() -> None:
 
     options = []
     options += playerlist.labels()
-    options.append("---------")
     options.append("Pause All")
     options.append("Next Track")
     options.append("Prev Track")
